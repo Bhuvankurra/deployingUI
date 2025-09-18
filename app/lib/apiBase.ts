@@ -1,7 +1,11 @@
-// API base URL configuration
+// Central API base URL resolver.
+// In production we expect NEXT_PUBLIC_API_URL to be defined (set in Vercel env).
+// In local development, fallback to localhost if not provided.
 
 export function getApiBase(): string {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+  if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+  // Dev fallback
+  return 'http://localhost:8000';
 }
 
 export default getApiBase;
