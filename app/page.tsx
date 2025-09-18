@@ -1,8 +1,14 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
-  return (
-    <div>
-      <h1>Temporary Next.js App</h1>
-      <p>Status: OK - {new Date().toISOString()}</p>
-    </div>
-  );
+  const token = cookies().get('auth_token')?.value;
+  if (token) {
+    redirect('/dashboard');
+  } else {
+    redirect('/login');
+  }
+  return null;
 }
