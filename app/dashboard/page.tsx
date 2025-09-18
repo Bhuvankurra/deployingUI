@@ -1,5 +1,7 @@
 "use client";
-import React, { useState, useEffect, useMemo } from 'react';
+// This page uses useSearchParams; disable static optimization to avoid prerender errors.
+export const dynamic = 'force-dynamic';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getApiBase } from '../lib/apiBase';
 import { getAuthHeaders } from '../lib/auth';
@@ -56,7 +58,7 @@ function detailedProgress(status: RunStatus | null | undefined): number {
   return Math.max(0, Math.min(1, total));
 }
 
-export default function DashboardPage() {
+function DashboardInner() {
   const params = useSearchParams();
   const [query, setQuery] = useState("software engineer");
   const [runId, setRunId] = useState<string | null>(null);
@@ -672,4 +674,8 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
+
+export default function DashboardPage(){
+  return <Suspense fallback={<div style={{padding:40}}>Loading dashboard…</div>}><DashboardInner /></Suspense>;
 }

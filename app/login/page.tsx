@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from 'react';
+export const dynamic = 'force-dynamic';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { login } from '../lib/auth';
 
-export default function LoginPage(){
+function LoginInner(){
   const router = useRouter();
   const search = useSearchParams();
   const next = search?.get('next') || '/';
@@ -60,6 +61,10 @@ export default function LoginPage(){
       </form>
     </main>
   );
+}
+
+export default function LoginPage(){
+  return <Suspense fallback={<div style={{padding:40}}>Loading…</div>}><LoginInner /></Suspense>;
 }
 
 const inputStyle: React.CSSProperties = { padding:'10px 12px', background:'#ffffff', border:'1px solid #d1d5db', borderRadius:6, fontSize:14, color:'#333', outline:'none' };

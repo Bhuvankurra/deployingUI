@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState, useMemo } from 'react';
+export const dynamic = 'force-dynamic';
+import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getApiBase } from '../../lib/apiBase';
 import { getAuthHeaders } from '../../lib/auth';
@@ -9,7 +10,7 @@ interface JobDetail { id:number; title:string; company?:string; location?:string
 
 const API_BASE = getApiBase();
 
-export default function JobDetailPage(){
+function JobDetailInner(){
   const params = useSearchParams();
   const jobId = Number(params.get('id')) || Number(globalThis.location.pathname.split('/').pop());
   const runId = params.get('runId');
@@ -117,4 +118,8 @@ export default function JobDetailPage(){
       )}
     </main>
   );
+}
+
+export default function JobDetailPage(){
+  return <Suspense fallback={<div style={{padding:24}}>Loading job…</div>}><JobDetailInner /></Suspense>;
 }
