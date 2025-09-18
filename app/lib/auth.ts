@@ -1,6 +1,6 @@
 // Authentication utilities for the frontend application
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+import { getApiBase } from './apiBase';
+const API_BASE = getApiBase();
 
 export interface LoginResponse {
   access_token: string;
@@ -45,7 +45,11 @@ export async function login(email: string, password: string): Promise<LoginRespo
   
   // Store token in cookie
   if (data.access_token) {
-    document.cookie = `auth_token=${encodeURIComponent(data.access_token)}; path=/; max-age=86400; SameSite=Strict`;
+    // Prefer Lax for normal navigation while protecting against CSRF in some cases.
+    // Secure flag automatically ignored on http://localhost during dev.
+    const secure = (typeof window !== 'undefined' && window.location.protocol === 'https:') ? 'Secure; ' : '';
+    document.cookie = `auth_token=${encodeURIComponent(data.access_token)}; Path=/; Max-Age=${60*60*24*7}; ${secure}SameSite=Lax`;
+    try { localStorage.setItem('user_token_role', data.role); } catch {/* ignore */}
   }
 
   return data;
